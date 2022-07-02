@@ -9,8 +9,8 @@ import { Button, CardActionArea, CardActions } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { TabPanel } from '../TabPanel/TabPanel';
 import { useDispatch, useSelector } from 'react-redux';
-import { cartItemsState } from '../../redux/reducers/cart';
-import { addToCart } from '../../redux/reducers/cart';
+import { cartItemsState, currentRestState } from '../../redux/reducers/cart';
+import { addToCart, changeRest } from '../../redux/reducers/cart';
 import Grid from '@mui/material/Grid';
 import {
     getFirestore,
@@ -25,7 +25,7 @@ import Notiflix from 'notiflix';
 export const TabMenu = () => {
     const cartItems = useSelector(cartItemsState);
     const dispatch = useDispatch();
-    const [value, setValue] = useState(0);
+    const value = useSelector(currentRestState);
     const [restaurants, setRestaurants] = useState([]);
     const [meals, setMeals] = useState([]);
     const firestore = getFirestore();
@@ -35,7 +35,7 @@ export const TabMenu = () => {
         const fetchData = async () => {
             const q = query(
                 collection(firestore, 'meals'),
-                where('idRest', '==', value),
+                where('idRest', '==', value)
             );
             await getDocs(q)
                 .then(querySnapshot => {
@@ -52,7 +52,7 @@ export const TabMenu = () => {
                             setMeals(prev => [...prev, data]);
                         } else {
                             Notiflix.Notify.failure(
-                                'List restaurants is empty',
+                                'List restaurants is empty'
                             );
                         }
                     });
@@ -80,7 +80,7 @@ export const TabMenu = () => {
                             setRestaurants(prev => [...prev, data]);
                         } else {
                             Notiflix.Notify.failure(
-                                'List restaurants is empty',
+                                'List restaurants is empty'
                             );
                         }
                     });
@@ -93,15 +93,8 @@ export const TabMenu = () => {
     }, [firestore]);
 
     const handleChange = (event, newValue) => {
-        setValue(newValue);
+        dispatch(changeRest(newValue));
     };
-
-    useEffect(() => {
-        if (cartItems.length === 0) {
-            return;
-        }
-        setValue(cartItems[0]['idRest']);
-    }, [cartItems]);
 
     function anyProps(index) {
         return {
@@ -135,7 +128,7 @@ export const TabMenu = () => {
                     return (
                         <Tab
                             disabled={cartItems.some(
-                                cartItem => cartItem.idRest !== Number(item.id),
+                                cartItem => cartItem.idRest !== Number(item.id)
                             )}
                             key={item.id}
                             label={item.name}
@@ -189,7 +182,7 @@ export const TabMenu = () => {
                                                     color="primary"
                                                     onClick={() =>
                                                         dispatch(
-                                                            addToCart(item),
+                                                            addToCart(item)
                                                         )
                                                     }
                                                 >

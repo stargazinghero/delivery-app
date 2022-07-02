@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
+        currentRest: 0,
         quantity: 0,
         cartItems: [],
         totalPrice: 0,
@@ -10,7 +11,7 @@ const cartSlice = createSlice({
     reducers: {
         addToCart: (state, { payload }) => {
             const checkProduct = state.cartItems.find(
-                item => item.id === payload.id,
+                item => item.id === payload.id
             );
             if (!checkProduct) {
                 state.cartItems = [
@@ -32,7 +33,7 @@ const cartSlice = createSlice({
 
         removeFromCart: (state, { payload }) => {
             state.cartItems = state.cartItems.filter(
-                item => item.id !== payload.id,
+                item => item.id !== payload.id
             );
             state.quantity -= payload.quantity;
             state.totalPrice -= payload.price * payload.quantity;
@@ -52,11 +53,11 @@ const cartSlice = createSlice({
 
         subtractItemQuantity: (state, { payload }) => {
             const subItem = state.cartItems.find(
-                item => item.id === payload.id,
+                item => item.id === payload.id
             );
             if (subItem.quantity === 1) {
                 state.cartItems = state.cartItems.filter(
-                    item => item.id !== subItem.id,
+                    item => item.id !== subItem.id
                 );
             } else {
                 subItem.quantity -= 1;
@@ -69,12 +70,16 @@ const cartSlice = createSlice({
             state.quantity = 0;
             state.totalPrice = 0;
         },
+        changeRest: (state, { payload }) => {
+            state.currentRest = payload;
+        },
     },
 });
 
 export const cartItemsState = state => state.cart.cartItems;
 export const totalPriceState = state => state.cart.totalPrice;
 export const quantityState = state => state.cart.quantity;
+export const currentRestState = state => state.cart.currentRest;
 
 export const cartReducer = cartSlice.reducer;
 
@@ -84,4 +89,5 @@ export const {
     addItemQuantity,
     subtractItemQuantity,
     clearCart,
+    changeRest,
 } = cartSlice.actions;
